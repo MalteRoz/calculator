@@ -1,0 +1,121 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+}
+
+$primary-display-BGcolor: #22252d;
+$primary-background-BGcolor: #292d36;
+$primary-btn-BGcolor: #272b33;
+$primary-btnText-1color: #26eac6;
+$primary-btnText-2color: #d45f5f;
+$primary-btnText-numColor: white;
+
+@mixin flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#container {
+    @include flex;
+    height: 100vh;
+    color: $primary-btnText-numColor;
+
+
+    .calculator {
+        @include flex;
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        flex-direction: column;
+        background-color: $primary-display-BGcolor;
+        height: 90%;
+        width: 25%;
+        border-radius: 2rem;
+
+        .upper {
+            @include flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 40%;
+            width: 100%;
+            padding: 2rem;
+            box-sizing: border-box;
+            .mathDisplay {
+                @include flex;
+                justify-content: right;
+                align-items: end;
+                height: 70%;
+                width: 100%;
+                
+                p {
+                    font-size: 1.25rem;
+                    font-weight: normal;
+                }
+            }
+
+            .resultDisplay {
+                @include flex; 
+                align-items: end;
+                flex-direction: row;
+                justify-content: right;
+                height: 30%;
+                width: 100%;
+
+                p {
+                    font-size: 3rem;
+                }
+            }
+
+        }
+
+        .lower {
+            background-color: $primary-background-BGcolor;
+            height: 60%;
+            width: 100%;
+            border-radius: 2rem;
+            padding: 2rem;
+            box-sizing: border-box;
+
+            .lower-gridArea {
+                display: grid;
+                text-align: center;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+                grid-template-areas:
+                    'C D E F'
+                    'G H I J'
+                    'K L M N'
+                    'O P Q R'
+                    'S T U U'
+                ;
+
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(5, 1fr);
+                gap: 10px;
+
+                button {
+                    border: none;
+                    color: $primary-btnText-numColor ;
+                    background-color: $primary-btn-BGcolor;
+                    padding: 1rem;
+                    border-radius: 1rem;
+                    cursor: pointer;
+                }
+                .greenNumber {
+                    color: $primary-btnText-1color ;
+                }
+
+                .oNumber {
+                    color: $primary-btnText-2color;
+                }
+
+                .equal {
+                    grid-area: U;
+                }
+
+            }
+        }
+    }
+}
