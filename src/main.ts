@@ -1,129 +1,188 @@
+import { Easing } from "react-native";
 import "./scss/main.scss";
-
-let operator = document.querySelectorAll<HTMLButtonElement>(".operator");
-let number = document.querySelectorAll<HTMLButtonElement>(".number");
-let mathDisplayPara = document.querySelector(
+const mathDisplayPara = document.querySelector(
   ".mathDisplayPara"
 ) as HTMLParagraphElement;
-let resultsDisplayPara = document.querySelector(
-  ".resultsDisplayPara"
-) as HTMLButtonElement;
-let remove = document.querySelector(".remove") as HTMLButtonElement;
-let clear = document.querySelector(".clear") as HTMLButtonElement;
-let equal = document.querySelector(".equal") as HTMLButtonElement;
-let currentExpression: string = "";
+let toggleOperator: boolean = false;
+let firstNum: string = "";
+let secondNum: string = "";
+let operatorValue1: string = "";
+let temporaryOperator: string = "";
 
-function removeBtnListner() {
-  remove.addEventListener("click", (e) => {
-    const button = (e.target as HTMLElement).closest(
-      "button"
-    ) as HTMLButtonElement;
-    if (button) {
-      let currentValue = mathDisplayPara.innerHTML;
-      mathDisplayPara.innerHTML = currentValue.slice(0, -1);
+function toggleThemeListner() {
+  const theme = document.querySelector(".theme-card") as HTMLDivElement;
+  theme.addEventListener("click", () => {
+    const container = document.querySelector("#container");
+    const light = document.querySelector(".light") as HTMLImageElement;
+    const dark = document.querySelector(".dark") as HTMLImageElement;
+    container?.classList.toggle("light-mode");
+
+    if (container?.classList.contains("light-mode")) {
+      // Om ljusläge är aktivt, byt till mörkt läge
+      light.src = "src/img/sun-dark.png";
+      dark.src = "src/img/moon-dark.png";
+      dark.classList.add("opacity");
+      light.classList.remove("opacity");
+    } else {
+      // Om mörkt läge är aktivt, byt till ljust läge
+      light.src = "src/img/sun.png";
+      dark.src = "src/img/moon2.png";
+      light.classList.add("opacity");
+      dark.classList.remove("opacity");
     }
   });
 }
 
-function clearBTNListner() {
-  clear.addEventListener("click", () => {
-    mathDisplayPara.textContent = "";
-    resultsDisplayPara.textContent = "";
-    currentExpression = "";
+function numbersListner() {
+  let number = document.querySelectorAll<HTMLButtonElement>(".number");
+  number.forEach((numbers) => {
+    numbers.addEventListener("click", (e) => {
+      const numberValue = (e.target as HTMLButtonElement).getAttribute(
+        "data-value"
+      );
+      if (numberValue !== null) {
+        if (toggleOperator === false) {
+          firstNum += numberValue;
+          console.log("FirstNum " + firstNum);
+        } else if (toggleOperator === true) {
+          secondNum += numberValue;
+          console.log("SecondNum: " + secondNum);
+        }
+
+        updateDisplay(numberValue);
+        clear();
+      }
+    });
   });
 }
 
 function operatorsListner() {
+  let operator = document.querySelectorAll<HTMLButtonElement>(".operator");
   operator.forEach((operators) => {
     operators.addEventListener("click", (e) => {
       const button = (e.target as HTMLElement).closest(
         "button"
       ) as HTMLButtonElement;
+
       if (button) {
-        const value = button.getAttribute("data-value");
-        if (value !== null) {
-          if (currentExpression.length === 0) {
-            mathDisplayPara.innerText =
-              "*Error* Cannot add operator on empty value.";
-            return;
+        const operatorValue = button.getAttribute("data-value");
+        if (operatorValue !== null) {
+          if (secondNum.length !== 0 && toggleOperator === true) {
+            calculate(firstNum, operatorValue1, secondNum);
           }
-
-          const lastChar = currentExpression[currentExpression.length - 1];
-          const operators = ["%", "/", "*", "-", "+"];
-
-          if (operators.includes(lastChar)) {
-            alert("wrong format");
-          } else {
-            currentExpression += ` ${value} `;
-            updateDisplay(currentExpression);
-          }
+          operatorValue1 = operatorValue;
+          toggleOperator = true;
+          console.log(operatorValue1);
         }
       }
     });
   });
 }
 
-function numbersListner() {
-  number.forEach((numbers) => {
-    numbers.addEventListener("click", (e) => {
-      const value = (e.target as HTMLButtonElement).getAttribute("data-value");
-      if (value !== null) {
-        currentExpression += ` ${value} `;
-        updateDisplay(currentExpression);
-      }
-    });
-  });
+function handleFalseOperator(newOperator: string) {
+  if (firstNum.length === 0) {
+    mathDisplayPara.innerText = "*Error* Cannot use operator before value";
+  }
+
+  const displayText = mathDisplayPara.innerText;
+  const updatedDisplayText = displayText.slice(0, -2) + " " + newOperator + " ";
+  mathDisplayPara.innerText = updatedDisplayText;
+  operatorValue1 = newOperator;
 }
 
-function evalBtnListner() {
-  equal.addEventListener("click", () => {
-    console.log("Current Expression before calculation:", currentExpression);
-    const result = calculate(currentExpression);
-    console.log("Result:", result);
-  });
+function calculate(expression1: string, operator: string, expression2: string) {
+  let first = parseFloat(expression1);
+  let second = parseFloat(expression2);
+  let sum: number = 0;
+  switch (operator) {
+    case "+":
+      sum = first + second;
+      break;
+    case "-":
+      sum = first - second;
+      break;
+    case "*":
+      sum = first * second;
+      break;
+    case "/":
+      sum = first / second;
+      break;
+  }
+
+  console.log(sum);
+  secondNum = "";
+  firstNum = sum.toString();
+  mathDisplayPara.innerText = `${firstNum} `;
 }
 
 function updateDisplay(expression: string) {
-  mathDisplayPara.textContent = expression;
+  mathDisplayPara.innerText += expression;
 }
 
-function calculate(expression: string) {
-  const parts = expression.match(/\d+|[+\-*/]/g);
+function clear() {
+  const clearBtn = document.querySelector(".clear") as HTMLButtonElement;
+  const resultsDisplayPara = document.querySelector(
+    ".resultsDisplayPara"
+  ) as HTMLButtonElement;
 
-  console.log("Parts after splitting:", parts);
-
-  if (!parts || parts.length < 3 || parts.length % 2 === 0) {
-    alert("Ogiltigt uttrycksformat. Försök med 'tal operator tal'.");
-    return NaN;
-  }
-
-  const [leftOperand, operator, rightOperand] = parts;
-
-  console.log("Left Operand:", leftOperand);
-  console.log("Operator:", operator);
-  console.log("Right Operand:", rightOperand);
-
-  const left = parseFloat(leftOperand);
-  const right = parseFloat(rightOperand);
-
-  switch (operator) {
-    case "+":
-      return left + right;
-    case "-":
-      return left - right;
-    case "*":
-      return left * right;
-    case "/":
-      return left / right;
-    default:
-      throw new Error("Ogiltig operator");
-  }
+  clearBtn.addEventListener("click", () => {
+    mathDisplayPara.innerText = "";
+    resultsDisplayPara.innerText = "";
+    firstNum = "";
+    secondNum = "";
+    operatorValue1 = "";
+    toggleOperator = false;
+  });
 }
 
-function sortExpression(expression: string) {}
+function equalBtnListner() {
+  const equalBtn = document.querySelector(".equal") as HTMLButtonElement;
+  equalBtn.addEventListener("click", () => {
+    if (
+      firstNum.length !== 0 &&
+      secondNum.length !== 0 &&
+      toggleOperator === true
+    ) {
+      console.log(firstNum, operatorValue1, secondNum);
+      calculate(firstNum, operatorValue1, secondNum);
+    }
+  });
+}
 
-evalBtnListner();
+function removeBtnListner() {
+  const remove = document.querySelector(".remove") as HTMLElement;
+  remove.addEventListener("click", (e) => {
+    const button = (e.target as HTMLElement).closest(
+      "button"
+    ) as HTMLButtonElement;
+    if (button) {
+      let currentValue = mathDisplayPara.innerText;
+      mathDisplayPara.innerText = currentValue.slice(0, -1);
+    }
+  });
+}
+
+equalBtnListner();
+clear();
+removeBtnListner();
 operatorsListner();
 numbersListner();
-removeBtnListner();
-clearBTNListner();
+toggleThemeListner();
+
+// if (toggleOperator === true && secondNum.length !== 0) {
+//   console.log("Firstnum: " + firstNum);
+//   console.log("secondNum: " + secondNum);
+//   console.log("operator: " + operatorValue);
+//   console.log("Uträkning: " + firstNum, operatorValue1, secondNum);
+//   calculate(firstNum, operatorValue1, secondNum);
+//   console.log(operatorValue1);
+// } else if (toggleOperator === true && secondNum.length === 0) {
+//   handleFalseOperator(operatorValue);
+// } else if (firstNum.length === 0) {
+//   handleFalseOperator(operatorValue);
+// } else {
+//   console.log("balle");
+//   toggleOperator = true;
+//   operatorValue1 = operatorValue;
+//   updateDisplay(" " + operatorValue + " ");
+// }

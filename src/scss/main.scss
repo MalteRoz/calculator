@@ -5,12 +5,14 @@
     font-weight: bold;
 }
 
-$primary-display-BGcolor: #22252d;
-$primary-background-BGcolor: #292d36;
-$primary-btn-BGcolor: #272b33;
-$primary-btnText-1color: #26eac6;
-$primary-btnText-2color: #d45f5f;
-$primary-btnText-numColor: white;
+:root {
+    --primary-display-BGcolor: #22252d;
+    --primary-background-BGcolor: #292d36;
+    --primary-btn-BGcolor: #272b33;
+    --primary-btnText-1color: #26eac6;
+    --primary-btnText-2color: #d45f5f;
+    --primary-btnText-numColor: white;
+}
 
 @mixin flex {
     display: flex;
@@ -21,41 +23,65 @@ $primary-btnText-numColor: white;
 #container {
     @include flex;
     height: 100vh;
-    color: $primary-btnText-numColor;
-
+    color: var(--primary-btnText-numColor); // Korrigerad referens
 
     .calculator {
         @include flex;
         box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
         flex-direction: column;
-        background-color: $primary-display-BGcolor;
+        background-color: var(--primary-display-BGcolor); // Korrigerad referens
         height: 90%;
-        width: 25%;
+        width: 20rem;
         border-radius: 2rem;
 
         .upper {
             @include flex;
             flex-direction: column;
-            justify-content: flex-end;
             height: 40%;
             width: 100%;
             padding: 2rem;
             box-sizing: border-box;
+
+            .theme {
+                @include flex;
+                height: 40%;
+                width: 100%;
+
+                .theme-card {
+                    @include flex;
+                    justify-content: space-between;
+                    border-radius: 1rem;
+                    width: 40%;
+                    box-sizing: border-box;
+                    padding: 0.75rem 1rem;
+                    background-color: var(--primary-background-BGcolor); // Korrigerad referens
+
+                    img {
+                        width: 1.25rem;
+                        cursor: pointer;
+                    }
+
+                    .opacity {
+                         opacity: 30%;
+                    }
+                }
+            }
+
             .mathDisplay {
                 @include flex;
                 justify-content: right;
                 align-items: end;
-                height: 70%;
+                height: 30%;
                 width: 100%;
-                
+
                 p {
                     font-size: 1.25rem;
-                    font-weight: normal;
+                    font-weight: 500;
                 }
             }
 
             .resultDisplay {
-                @include flex; 
+                @include flex;
                 align-items: end;
                 flex-direction: row;
                 justify-content: right;
@@ -63,14 +89,13 @@ $primary-btnText-numColor: white;
                 width: 100%;
 
                 p {
-                    font-size: 3rem;
+                    font-size: 2.5rem;
                 }
             }
-
         }
 
         .lower {
-            background-color: $primary-background-BGcolor;
+            background-color: var(--primary-background-BGcolor); // Korrigerad referens
             height: 60%;
             width: 100%;
             border-radius: 2rem;
@@ -88,8 +113,7 @@ $primary-btnText-numColor: white;
                     'G H I J'
                     'K L M N'
                     'O P Q R'
-                    'S T U U'
-                ;
+                    'S T U U';
 
                 grid-template-columns: repeat(4, 1fr);
                 grid-template-rows: repeat(5, 1fr);
@@ -97,25 +121,36 @@ $primary-btnText-numColor: white;
 
                 button {
                     border: none;
-                    color: $primary-btnText-numColor ;
-                    background-color: $primary-btn-BGcolor;
+                    color: var(--primary-btnText-numColor); // Korrigerad referens
+                    background-color: var(--primary-btn-BGcolor); // Korrigerad referens
                     padding: 1rem;
                     border-radius: 1rem;
+                    font-size: 1.25rem;
                     cursor: pointer;
                 }
+
                 .greenNumber {
-                    color: $primary-btnText-1color ;
+                    color: var(--primary-btnText-1color); // Korrigerad referens
                 }
 
                 .oNumber {
-                    color: $primary-btnText-2color;
+                    color: var(--primary-btnText-2color); // Korrigerad referens
                 }
 
                 .equal {
                     grid-area: U;
                 }
-
             }
         }
     }
+
+    &.light-mode {
+        --primary-display-BGcolor: #f0f0f0;          // Mörkare nyans
+        --primary-background-BGcolor:#e0e0e0 ;       // Mörkare nyans
+        --primary-btn-BGcolor: #e6e6e6;               // Mörkare nyans
+        --primary-btnText-1color: #26eac6;           // Mörkare nyans
+        --primary-btnText-2color: #d45f5f;            // Oförändrad
+        --primary-btnText-numColor: black;
+    }
 }
+
